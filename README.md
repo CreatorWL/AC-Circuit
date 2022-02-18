@@ -16,28 +16,25 @@ The objective of this project is to create an interactive program that allows th
 
 An alternating-current (AC) circuit consists of an AC source that drives an electric current. The current oscillates over time, which periodically reverses the direction and alters its amplitude. An AC circuit’s resistance is described by the impedance. This is the effective resistance to the flow of current around the circuit. The impedance is given by Ohm’s Law:
 
-\[
-V =ZI, (1)
-\]
+<img src="https://render.githubusercontent.com/render/math?math=V=ZI"> (1)
 
 where V is the voltage, Z is the impedance, and I is the current. The voltage and currents are sinusoidal, and are therefore typically expressed in complex exponential form. Thus, the impedance can be expressed as a complex number,
 
-\[
-Z = R + iX, (2)
-\]
+
+<img src="https://render.githubusercontent.com/render/math?math=Z = R + iX"> (2)
 
 where R is the resistance, as experienced within a DC circuit, and X is the reactance, which arises from capacitance and inductance, causing the current to be out of phase with the the driving electromotive force of the circuit. Kirchhoff’s Law states that a circuit made up of N circuits in parallel or series, the impedance is given as
 
-\[
-\begin{equation}
-Z_{\text {series }}=\sum_{i=0}^{n} Z_{i} \quad \text { and } \quad Z_{\text {parallel }}=\frac{1}{\sum_{i=0}^{n} \frac{1}{Z_{i}}} .
-\end{equation}
-\]
+
+<img src="https://render.githubusercontent.com/render/math?math=Z_{\text {series }}=\sum_{i=0}^{n} Z_{i} \quad \text { and } \quad Z_{\text {parallel }}=\frac{1}{\sum_{i=0}^{n} \frac{1}{Z_{i}}}">
+
 
 There are three types of ideal components used in AC circuits. These are resistors, capacitors and
  inductors.
 
 All three have different properties, as shown in table 1. 
+
+
 
 \[
   \begin{equation}
@@ -68,7 +65,7 @@ The component class is a virtual base class that prevents multiple instances of 
 
 The component class contains the following set of protected member variables accessible to derived classes:
 ```cpp
-   std::string type{"component"};
+std::string type{"component"};
 std::string units{"units"};
 double frequency {};
 std::complex<double> impedance{std::complex<double>(0,0)}; // All
@@ -81,7 +78,7 @@ std::string symbol{"[~Component~]"}; std::deque<int> nest_levels;
 The base class provides pure virtual overridable member functions for specification in derived classes. The pure virtual functions include set impedance, for each components individual impedance, and a virtual destructor ∼component(){}, allowing each component to call its own destructor. Non-virtual member functions of component include
 
 ```cpp
-   double get_frequency() const; std::complex<double> get_impedance() const; double get_impedance_magnitude() const; double get_impedance_phase() const;
+double get_frequency() const; std::complex<double> get_impedance() const; double get_impedance_magnitude() const; double get_impedance_phase() const;
 ```
 
 The trailing const keywords restrict the function from modifying the state of the object it is called upon.
@@ -99,7 +96,7 @@ The private member variables are only accessible with setters and getters, demon
 The circuit class is a generic class for storing components in series or parallel to form an A.C. circuit. It then calculates the impedance of the circuit, and prints the result to the console, along with other information about the circuit. The private members of circuit are
 
 ```cpp
-   double frequency {100};
+double frequency {100};
 std::complex<double> impedance{0,0}; std::vector<std::shared_ptr<component>> inner_components; std::string circuit_schematic{};
 ```
 
@@ -108,7 +105,7 @@ std::complex<double> impedance{0,0}; std::vector<std::shared_ptr<component>> inn
 The public member functions of circuit are mostly setters and getters for the private members. The notable function is set impedance, called when calculating the circuit impedance and assigning it to the impedance private member. First, it runs through two statements:
 
 ```cpp
-   if(inner_components.size() == 1) {
+if(inner_components.size() == 1) {
 total_impedance = inner_components[0]->get_impedance();
 } else if(inner_components.size() == 2) { if(inner_components[0]->get_nest_levels()[0] == 0) {
 total_impedance = inner_components[0]->get_impedance() + inner_components[1]->get_impedance();
@@ -123,10 +120,11 @@ The first of these statements checks if there is only one component in the circu
 The third possibility, where inner components is greater than two, requires a more complicated assessment. First, nest levels and impedance are stored within a std::multimap container for each component. Each component multimap is then stored within another multimap:
 
 ```cpp
-  std::multimap<int, std::multimap<std::deque<int>, std::complex< double>>, std::greater <int>> temp_impedance_map;
+std::multimap<int, std::multimap<std::deque<int>, std::complex< double>>, std::greater <int>> temp_impedance_map;
 ```
 
-  where each key is the size of the corresponding nest levels, and std::greater ensures that components are stored in the multimap from largest key to smallest key.
+where each key is the size of the corresponding nest levels, and std::greater ensures that components are stored in the multimap from largest key to smallest key.
+
 The function then enters a while loop with the condition temp impedace map.size() > 1. For each loop iteration, two iterators are initialised that compare each nest level against each other, without duplication, and without comparing one nest level against itself. For each comparison, there are three possibilities:
 
 1. If each nest level is identical in length and values, then the two inner multimaps corre- sponding to iterator 1 and 2 are removed from temp impedace map. These are replaced with a new multimap where the impedance isthe sum of the two previous multimaps. This process reduces the size of temp impedace map by 1.
